@@ -1,128 +1,58 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>ARK Ultimate Builder</title>
-  <style>
-    body { font-family: Arial; background:#0f172a; color:#e2e8f0; padding:20px; }
-    select, input, button { padding:6px; margin:5px; }
-    .box { background:#1e293b; padding:15px; border-radius:10px; margin-bottom:15px; }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ASA Build Blueprint Parser</title>
 </head>
 <body>
-
-<h1>ARK Structure & Storage Calculator</h1>
-
-<div class="box">
-  <h3>Add Structure</h3>
-  <select id="structure"></select>
-  <input type="number" id="amount" placeholder="Amount">
-  <button onclick="addItem()">Add</button>
-</div>
-
-<div class="box">
-  <h3>Build List</h3>
-  <ul id="list"></ul>
-</div>
-
-<div class="box">
-  <h3>Storage Options</h3>
-  <label><input type="checkbox" id="dedicated"> Use Dedicated Storage</label>
-</div>
-
-<div class="box">
-  <h3>Results</h3>
-  <pre id="output"></pre>
-</div>
+<h1>ASA Build Blueprint Structure Counter</h1>
+<input type="file" id="buildFile" />
+<button onclick="parseBuild()">Count Structures</button>
+<pre id="output"></pre>
 
 <script>
+function parseBuild() {
+  const input = document.getElementById('buildFile');
+  const file = input.files[0];
 
-// ================= STRUCTURES =================
-fetch("structures.json")
-  .then(res => res.json())
-  .then(data => {
-    window.db = data;
-
-    data.structures.forEach(s => {
-      let opt = document.createElement("option");
-      opt.value = s.name;
-      opt.textContent = s.name;
-      dropdown.appendChild(opt);
-    });
-  });
-
-let buildList = [];
-
-// populate dropdown
-const dropdown = document.getElementById("structure");
-for (let s in structures) {
-  let opt = document.createElement("option");
-  opt.value = s;
-  opt.textContent = s;
-  dropdown.appendChild(opt);
-}
-
-function addItem() {
-  const type = dropdown.value;
-  const amount = parseInt(document.getElementById("amount").value);
-  if (!amount) return;
-
-  buildList.push({ type, amount });
-  render();
-}
-
-function render() {
-  const list = document.getElementById("list");
-  list.innerHTML = "";
-  buildList.forEach(i => {
-    list.innerHTML += `<li>${i.amount}x ${i.type}</li>`;
-  });
-  calculate();
-}
-
-function calculate() {
-  let totals = {};
-  let output = "";
-
-  buildList.forEach(item => {
-    const cost = structures[item.type];
-    for (let r in cost) {
-      totals[r] = (totals[r] || 0) + cost[r] * item.amount;
-    }
-  });
-
-  let totalStacks = 0;
-  const useDedicated = document.getElementById("dedicated").checked;
-
-  output += "=== RESOURCES ===\n";
-
-  for (let r in totals) {
-    const stack = stackSizes[r] || 100;
-    const stacks = Math.ceil(totals[r] / stack);
-    totalStacks += stacks;
-
-    output += `${r}: ${totals[r]} (${stacks} stacks)\n`;
+  if (!file) {
+    alert('Please select a build file.');
+    return;
   }
 
-  output += "\n=== STORAGE ===\n";
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const text = e.target.result;
 
-  if (useDedicated) {
-    for (let r in totals) {
-      output += `${r}: 1 Dedicated Storage\n`;
+    try {
+      const data = JSON.parse(text);
+      countStructures(data);
+    } catch (err) {
+      document.getElementById('output').innerText = 'Error parsing JSON. Please check the file format.';
     }
-  } else {
-    const vaults = Math.ceil(totalStacks / storage.vaultSlots);
-    const largeBoxes = Math.ceil(totalStacks / storage.largeBoxSlots);
-    const smallBoxes = Math.ceil(totalStacks / storage.smallBoxSlots);
-
-    output += `Vaults: ${vaults}\n`;
-    output += `Large Storage Boxes: ${largeBoxes}\n`;
-    output += `Small Storage Boxes: ${smallBoxes}\n`;
-  }
-
-  document.getElementById("output").textContent = output;
+  };
+  reader.readAsText(file);
 }
 
+function countStructures(data) {
+  const entries = data.entries;
+  const counts = {};
+
+  // Count each structure type
+  entries.forEach(entry => {
+    const structureType = entry.structure;
+    counts[structureType] = (counts[structureType] || 0) + 1;
+  });
+
+  // Format output
+  let outputStr = 'Structure Counts:\n';
+  for (const [structure, count] of Object.entries(counts)) {
+    outputStr += `${structure}: ${count}\n`;
+  }
+
+  document.getElementById('output').innerText = outputStr;
+}
 </script>
-
 </body>
 </html>
