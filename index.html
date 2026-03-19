@@ -1,17 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>ASA Build Blueprint Parser</title>
-</head>
-<body>
-<h1>ASA Build Blueprint Structure Counter</h1>
-<input type="file" id="buildFile" />
-<button onclick="parseBuild()">Count Structures</button>
-<pre id="output"></pre>
-
 <script>
+// Load the structure mapping JSON
+let structureMap = {};
+
+fetch('structures.json')
+  .then(response => response.json())
+  .then(data => {
+    structureMap = data;
+  });
+
+// Existing functions
 function parseBuild() {
   const input = document.getElementById('buildFile');
   const file = input.files[0];
@@ -42,7 +39,8 @@ function countStructures(data) {
   // Count each structure type
   entries.forEach(entry => {
     const structureType = entry.structure;
-    counts[structureType] = (counts[structureType] || 0) + 1;
+    const shortName = structureMap[structureType] || structureType; // fallback to full if no mapping
+    counts[shortName] = (counts[shortName] || 0) + 1;
   });
 
   // Format output
@@ -54,5 +52,3 @@ function countStructures(data) {
   document.getElementById('output').innerText = outputStr;
 }
 </script>
-</body>
-</html>
