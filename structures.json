@@ -1,0 +1,115 @@
+{
+  "structures": [
+    {
+      "name": "Thatch Foundation",
+      "category": "Thatch",
+      "cost": { "thatch": 20, "wood": 5, "fiber": 15 }
+    },
+    {
+      "name": "Wood Foundation",
+      "category": "Wood",
+      "cost": { "wood": 80, "thatch": 20, "fiber": 15 }
+    },
+    {
+      "name": "Stone Foundation",
+      "category": "Stone",
+      "cost": { "stone": 80, "wood": 20, "thatch": 15 }
+    },
+    {
+      "name": "Metal Foundation",
+      "category": "Metal",
+      "cost": { "metal": 50, "cementing_paste": 20, "polymer": 10 }
+    },
+
+    {
+      "name": "Stone Wall",
+      "category": "Stone",
+      "cost": { "stone": 60, "wood": 15, "thatch": 10 }
+    },
+    {
+      "name": "Metal Wall",
+      "category": "Metal",
+      "cost": { "metal": 40, "cementing_paste": 15, "polymer": 5 }
+    },
+
+    {
+      "name": "Vault",
+      "category": "Storage",
+      "cost": { "metal": 300, "cementing_paste": 60, "polymer": 30 }
+    },
+    {
+      "name": "Large Storage Box",
+      "category": "Storage",
+      "cost": { "wood": 50, "thatch": 20, "fiber": 40 }
+    },
+    {
+      "name": "Refrigerator",
+      "category": "Storage",
+      "cost": { "metal": 120, "crystal": 80, "electronics": 60 }
+    },
+
+    {
+      "name": "Smithy",
+      "category": "Crafting",
+      "cost": { "metal": 50, "stone": 30, "wood": 20 }
+    },
+    {
+      "name": "Fabricator",
+      "category": "Crafting",
+      "cost": { "metal": 200, "crystal": 100, "electronics": 100 }
+    },
+
+    {
+      "name": "Auto Turret",
+      "category": "Defense",
+      "cost": { "metal": 200, "electronics": 70, "polymer": 50 }
+    },
+    {
+      "name": "Heavy Turret",
+      "category": "Defense",
+      "cost": { "metal": 400, "electronics": 150, "polymer": 100 }
+    },
+
+    {
+      "name": "Generator",
+      "category": "Utility",
+      "cost": { "metal": 200, "electronics": 100 }
+    },
+    {
+      "name": "Air Conditioner",
+      "category": "Utility",
+      "cost": { "metal": 80, "electronics": 40, "polymer": 20 }
+    },
+
+    {
+      "name": "Tek Foundation",
+      "category": "Tek",
+      "cost": { "metal": 100, "crystal": 50, "element": 10 }
+    },
+    {
+      "name": "Tek Generator",
+      "category": "Tek",
+      "cost": { "metal": 500, "electronics": 200, "element": 50 }
+    }
+  ],
+
+  "stackSizes": {
+    "thatch": 200,
+    "wood": 100,
+    "fiber": 300,
+    "stone": 100,
+    "metal": 100,
+    "cementing_paste": 100,
+    "polymer": 100,
+    "crystal": 100,
+    "electronics": 100,
+    "element": 1
+  },
+
+  "storage": {
+    "vault": 350,
+    "large_storage_box": 45,
+    "small_storage_box": 30,
+    "dedicated_storage": 20000
+  }
+}
