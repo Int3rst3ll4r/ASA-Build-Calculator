@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ARK Ultimate Builder</title>
+  <style>
+    body { font-family: Arial; background:#0f172a; color:#e2e8f0; padding:20px; }
+    select, input, button { padding:6px; margin:5px; }
+    .box { background:#1e293b; padding:15px; border-radius:10px; margin-bottom:15px; }
+  </style>
+</head>
+<body>
+
+<h1>ARK Structure & Storage Calculator</h1>
+
+<div class="box">
+  <h3>Add Structure</h3>
+  <select id="structure"></select>
+  <input type="number" id="amount" placeholder="Amount">
+  <button onclick="addItem()">Add</button>
+</div>
+
+<div class="box">
+  <h3>Build List</h3>
+  <ul id="list"></ul>
+</div>
+
+<div class="box">
+  <h3>Storage Options</h3>
+  <label><input type="checkbox" id="dedicated"> Use Dedicated Storage</label>
+</div>
+
+<div class="box">
+  <h3>Results</h3>
+  <pre id="output"></pre>
+</div>
+
+<script>
+
+// ================= STRUCTURES =================
+const structures = {
+
+  // THATCH
+  "Thatch Foundation": { thatch:20, wood:5, fiber:15 },
+  "Thatch Wall": { thatch:15, wood:3, fiber:10 },
+  "Thatch Ceiling": { thatch:10, wood:2, fiber:8 },
+
+  // WOOD
+  "Wood Foundation": { wood:80, thatch:20, fiber:15 },
+  "Wood Wall": { wood:60, thatch:15, fiber:10 },
+  "Wood Ceiling": { wood:40, thatch:10, fiber:8 },
+
+  // STONE
+  "Stone Foundation": { stone:80, wood:20, thatch:15 },
+  "Stone Wall": { stone:60, wood:15, thatch:10 },
+  "Stone Ceiling": { stone:40, wood:10, thatch:8 },
+
+  // METAL
+  "Metal Foundation": { metal:50, cementing:20, polymer:10 },
+  "Metal Wall": { metal:40, cementing:15, polymer:5 },
+  "Metal Ceiling": { metal:30, cementing:10, polymer:5 },
+
+  // TEK
+  "Tek Foundation": { metal:100, crystal:50, element:10 },
+  "Tek Wall": { metal:80, crystal:40, element:8 },
+
+  // STORAGE
+  "Small Storage Box": { wood:25, thatch:10, fiber:20 },
+  "Large Storage Box": { wood:50, thatch:20, fiber:40 },
+  "Vault": { metal:300, cementing:60, polymer:30 },
+  "Refrigerator": { metal:120, crystal:80, electronics:60 },
+  "Preserving Bin": { wood:30, thatch:20, fiber:15 },
+
+  // CRAFTING
+  "Smithy": { metal:50, stone:30, wood:20 },
+  "Fabricator": { metal:200, crystal:100, electronics:100 },
+  "Chemistry Bench": { metal:250, crystal:150, electronics:120 },
+
+  // DEFENSE
+  "Auto Turret": { metal:200, electronics:70, polymer:50 },
+  "Heavy Turret": { metal:400, electronics:150, polymer:100 },
+
+  // UTILITY
+  "Generator": { metal:200, electronics:100 },
+  "Electrical Outlet": { metal:15, electronics:10 },
+  "Air Conditioner": { metal:80, electronics:40, polymer:20 }
+
+};
+
+// ================= STACK SIZES =================
+const stackSizes = {
+  thatch: 200,
+  wood: 100,
+  fiber: 300,
+  stone: 100,
+  metal: 100,
+  cementing: 100,
+  polymer: 100,
+  crystal: 100,
+  electronics: 100,
+  element: 1
+};
+
+// ================= STORAGE =================
+const storage = {
+  vaultSlots: 350,
+  largeBoxSlots: 45,
+  smallBoxSlots: 30
+};
+
+let buildList = [];
+
+// populate dropdown
+const dropdown = document.getElementById("structure");
+for (let s in structures) {
+  let opt = document.createElement("option");
+  opt.value = s;
+  opt.textContent = s;
+  dropdown.appendChild(opt);
+}
+
+function addItem() {
+  const type = dropdown.value;
+  const amount = parseInt(document.getElementById("amount").value);
+  if (!amount) return;
+
+  buildList.push({ type, amount });
+  render();
+}
+
+function render() {
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+  buildList.forEach(i => {
+    list.innerHTML += `<li>${i.amount}x ${i.type}</li>`;
+  });
+  calculate();
+}
+
+function calculate() {
+  let totals = {};
+  let output = "";
+
+  buildList.forEach(item => {
+    const cost = structures[item.type];
+    for (let r in cost) {
+      totals[r] = (totals[r] || 0) + cost[r] * item.amount;
+    }
+  });
+
+  let totalStacks = 0;
+  const useDedicated = document.getElementById("dedicated").checked;
+
+  output += "=== RESOURCES ===\n";
+
+  for (let r in totals) {
+    const stack = stackSizes[r] || 100;
+    const stacks = Math.ceil(totals[r] / stack);
+    totalStacks += stacks;
+
+    output += `${r}: ${totals[r]} (${stacks} stacks)\n`;
+  }
+
+  output += "\n=== STORAGE ===\n";
+
+  if (useDedicated) {
+    for (let r in totals) {
+      output += `${r}: 1 Dedicated Storage\n`;
+    }
+  } else {
+    const vaults = Math.ceil(totalStacks / storage.vaultSlots);
+    const largeBoxes = Math.ceil(totalStacks / storage.largeBoxSlots);
+    const smallBoxes = Math.ceil(totalStacks / storage.smallBoxSlots);
+
+    output += `Vaults: ${vaults}\n`;
+    output += `Large Storage Boxes: ${largeBoxes}\n`;
+    output += `Small Storage Boxes: ${smallBoxes}\n`;
+  }
+
+  document.getElementById("output").textContent = output;
+}
+
+</script>
+
+</body>
+</html>
